@@ -1,0 +1,10 @@
+target/
+*.class
+*.log
+
+# IntelliJ
+.idea/
+*.iml
+
+# Maven
+.mvn/

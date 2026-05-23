@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Player Stats</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+    <a href="/players-page" class="btn btn-secondary mb-4">Back to players</a>
+
+    <h1 th:text="'Stats for ' + ${stats.username}">Stats</h1>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <p>Total games: <span th:text="${stats.totalGames}"></span></p>
+            <p>Wins: <span th:text="${stats.wins}"></span></p>
+            <p>Losses: <span th:text="${stats.losses}"></span></p>
+            <p>Draws: <span th:text="${stats.draws}"></span></p>
+        </div>
+    </div>
+
+    <h3 class="mt-4">Most played openings</h3>
+
+    <table class="table table-bordered table-striped mt-3">
+        <thead>
+        <tr>
+            <th>Opening</th>
+            <th>Games</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="opening : ${stats.mostPlayedOpenings}">
+            <td th:text="${opening.key}"></td>
+            <td th:text="${opening.value}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Players</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+    <h1 class="mb-4">Lichess Players</h1>
+
+    <form th:action="@{/players-page}" th:object="${playerForm}" method="post" class="mb-4">
+
+        <div class="mb-3">
+            <label for="username" class="form-label">Lichess username</label>
+
+            <input id="username"
+                   type="text"
+                   th:field="*{username}"
+                   class="form-control">
+
+            <div class="text-danger"
+                 th:if="${#fields.hasErrors('username')}"
+                 th:errors="*{username}">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add player</button>
+    </form>
+
+    <table class="table table-bordered table-striped">
+
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Created At</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="player : ${players.content}">
+            <td th:text="${player.id}"></td>
+            <td th:text="${player.username}"></td>
+            <td th:text="${player.createdAt}"></td>
+            <td>
+                <form th:action="@{'/players-page/' + ${player.username} + '/sync'}"
+                      method="post"
+                      class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-success">
+                        Sync from Lichess
+                    </button>
+                </form>
+
+                <a th:href="@{'/players-page/' + ${player.username} + '/stats'}"
+                   class="btn btn-sm btn-info">
+                    Stats
+                </a>
+            </td>
+        </tr>
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>

@@ -1,7 +1,9 @@
 package com.autotests.lichessbackend.service;
 
 
-
+import com.autotests.lichessbackend.dto.AddPlayerDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.autotests.lichessbackend.dto.LichessGameDto;
 import com.autotests.lichessbackend.dto.PlayerResponseDto;
 import com.autotests.lichessbackend.dto.SyncResponseDto;
@@ -21,7 +23,22 @@ public class PlayerService {
     private final PlayerRepository playerRepository;
     private final GameRepository gameRepository;
     private final LichessClient lichessClient;
+    @Transactional(readOnly = true)
+    public Page<Player> getAllPlayers(Pageable pageable) {
+        return playerRepository.findAll(pageable);
+    }
 
+    @Transactional
+    public Player addPlayer(AddPlayerDto dto) {
+        Player player = new Player();
+        player.setUsername(dto.getUsername());
+        return playerRepository.save(player);
+    }
+
+    @Transactional
+    public Player addPlayer(Player player) {
+        return playerRepository.save(player);
+    }
     public PlayerService(PlayerRepository playerRepository,
                          GameRepository gameRepository,
                          LichessClient lichessClient) {
@@ -78,5 +95,10 @@ public class PlayerService {
         Player player = getPlayerEntity(username);
         long storedGames = gameRepository.countByPlayer(player);
         return new PlayerResponseDto(player.getId(), player.getUsername(), (int) storedGames);
+    }
+    @Transactional(readOnly = true)
+    public Player getPlayerById(Long id) {
+        return playerRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Player not found with id: " + id));
     }
 }

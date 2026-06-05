@@ -5,6 +5,7 @@ import com.autotests.lichessbackend.exception.SyncException;
 import com.autotests.lichessbackend.util.GameResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -15,6 +16,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Component
 public class LichessClient {
 
@@ -26,10 +28,13 @@ public class LichessClient {
                 .baseUrl("https://lichess.org")
                 .defaultHeader(HttpHeaders.ACCEPT, "application/x-ndjson")
                 .build();
+
         this.objectMapper = new ObjectMapper();
     }
 
     public List<LichessGameDto> fetchGamesByUsername(String username, int max) {
+        log.debug("Fetching games from Lichess. Username: {}, max: {}", username, max);
+
         try {
             String response = restClient.get()
                     .uri(uriBuilder -> uriBuilder
@@ -45,11 +50,14 @@ public class LichessClient {
                     .body(String.class);
 
             if (response == null || response.isBlank()) {
+                log.warn("Empty response from Lichess for user: {}", username);
                 return List.of();
             }
 
             List<LichessGameDto> games = new ArrayList<>();
             String[] lines = response.split("\\R");
+
+            log.trace("Lichess returned {} NDJSON lines for user: {}", lines.length, username);
 
             for (String line : lines) {
                 if (line == null || line.isBlank()) {
@@ -60,8 +68,11 @@ public class LichessClient {
                 games.add(mapGame(gameNode, username));
             }
 
+            log.debug("Mapped {} games from Lichess for user: {}", games.size(), username);
+
             return games;
         } catch (Exception e) {
+            log.error("Failed to fetch games from Lichess for user: {}", username, e);
             throw new SyncException("Failed to fetch games from Lichess for user: " + username, e);
         }
     }

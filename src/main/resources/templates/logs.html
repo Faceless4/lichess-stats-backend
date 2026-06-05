@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="">
+<head>
+    <title>Application Logs</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+    <a href="/players-page" class="btn btn-secondary mb-4">Back to players</a>
+
+    <h1 class="mb-4">Application Logs</h1>
+
+    <div class="alert alert-info">
+        Showing last 200 log lines from logs/lichess-backend.log
+    </div>
+
+    <pre class="bg-dark text-light p-3 rounded"
+         style="white-space: pre-wrap; max-height: 700px; overflow-y: auto;"
+         th:each="line : ${logs}"
+         th:text="${line}">
+    </pre>
+
+</div>
+
+</body>
+</html>

@@ -40,25 +40,18 @@ public class PlayerService {
         Player player = playerRepository.findByUsernameIgnoreCase(username)
                 .orElseGet(() -> {
                     log.debug("Player not found. Creating new player: {}", username);
-
                     Player newPlayer = new Player();
                     newPlayer.setUsername(username);
-
                     return playerRepository.save(newPlayer);
                 });
-
         List<LichessGameDto> fetchedGames = lichessClient.fetchGamesByUsername(username, 30);
-
         log.debug("Fetched {} games from Lichess for player: {}", fetchedGames.size(), username);
-
         int importedCount = 0;
-
         for (LichessGameDto dto : fetchedGames) {
             if (gameRepository.findByLichessGameId(dto.getGameId()).isPresent()) {
                 log.trace("Game already exists, skipping: {}", dto.getGameId());
                 continue;
             }
-
             Game game = new Game();
             game.setLichessGameId(dto.getGameId());
             game.setOpponentUsername(dto.getOpponentUsername());
@@ -68,29 +61,23 @@ public class PlayerService {
             game.setRated(dto.getRated());
             game.setPlayedAt(dto.getPlayedAt());
             game.setPlayer(player);
-
             gameRepository.save(game);
             importedCount++;
-
             log.trace("Imported game: {}", dto.getGameId());
         }
-
         long totalStoredGames = gameRepository.countByPlayer(player);
-
         log.info(
                 "Sync completed for player: {}. Imported: {}, total stored: {}",
                 username,
                 importedCount,
                 totalStoredGames
         );
-
         return new SyncResponseDto(player.getUsername(), importedCount, (int) totalStoredGames);
     }
 
     @Transactional(readOnly = true)
     public Player getPlayerEntity(String username) {
         log.debug("Searching player entity by username: {}", username);
-
         return playerRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new NotFoundException("Player not found: " + username));
     }
@@ -114,7 +101,6 @@ public class PlayerService {
     @Transactional(readOnly = true)
     public Player getPlayerById(Long id) {
         log.debug("Getting player by id: {}", id);
-
         return playerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Player not found with id: " + id));
     }
@@ -122,14 +108,10 @@ public class PlayerService {
     @Transactional
     public Player addPlayer(AddPlayerDto dto) {
         log.info("Adding player: {}", dto.getUsername());
-
         Player player = new Player();
         player.setUsername(dto.getUsername());
-
         Player savedPlayer = playerRepository.save(player);
-
         log.info("Player saved with id: {}", savedPlayer.getId());
-
         return savedPlayer;
     }
 }

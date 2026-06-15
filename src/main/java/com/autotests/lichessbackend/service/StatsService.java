@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,20 +31,15 @@ public class StatsService {
     @Transactional(readOnly = true)
     public PlayerStatsDto getStats(String username) {
         log.info("Calculating stats for player: {}", username);
-
         Player player = playerService.getPlayerEntity(username);
         List<Game> games = gameRepository.findAllByPlayer(player);
-
         log.debug("Found {} games for player: {}", games.size(), username);
-
         long wins = games.stream()
                 .filter(game -> GameResult.WIN.equals(game.getResult()))
                 .count();
-
         long losses = games.stream()
                 .filter(game -> GameResult.LOSS.equals(game.getResult()))
                 .count();
-
         long draws = games.stream()
                 .filter(game -> GameResult.DRAW.equals(game.getResult()))
                 .count();
@@ -74,7 +70,6 @@ public class StatsService {
                 losses,
                 draws
         );
-
         return new PlayerStatsDto(
                 player.getUsername(),
                 games.size(),

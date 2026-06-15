@@ -34,11 +34,8 @@ public class LogsPageController {
             if (!Files.exists(LOG_FILE_PATH)) {
                 return List.of("Log file does not exist yet.");
             }
-
             List<String> lines = Files.readAllLines(LOG_FILE_PATH);
-
             int fromIndex = Math.max(0, lines.size() - MAX_LINES);
-
             return lines.subList(fromIndex, lines.size());
         } catch (IOException exception) {
             log.error("Failed to read log file", exception);

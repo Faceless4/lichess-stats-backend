@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body>
+<h2>Register</h2>
+
+<input id="username" placeholder="Username">
+<input id="password" type="password" placeholder="Password">
+
+<select id="role">
+    <option value="USER">USER</option>
+    <option value="ADMIN">ADMIN</option>
+</select>
+
+<button onclick="register()">Register</button>
+
+<p id="message"></p>
+
+<script>
+    async function register() {
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value
+            })
+        });
+
+        const text = await response.text();
+        document.getElementById('message').innerText = text;
+
+        if (response.ok) {
+            window.location.href = '/login.html';
+        }
+    }
+</script>
+</body>
+</html>
